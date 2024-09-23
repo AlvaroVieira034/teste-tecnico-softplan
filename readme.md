@@ -5,6 +5,8 @@
 ## Menu
 
 - [Introdução](#introdução)
+  
+- [Configurações Iniciais](#configurações)
 
 - [Arquitetura](#arquitetura)
 
@@ -24,6 +26,10 @@
 
 Este projeto é uma aplicação Delphi que consome e retorna endereços e CEPs através da API pública do ViaCEP. Permite consultas por CEP ou endereço completo, exibindo ou atualizando os dados armazenados no banco de dados.
 
+## Configurações
+
+Para que seja possível a execução da aplicação, é necessário que seja criado um banco de dados MSSQL Server, cujo script para criação do mesmo (*script criação de tabelas.sql*)
+, criação das tabelas das tabelas e população de registros na tabela de CEP. para que a aplicação fique disponível para uso logo que instalado.
 ## Arquitetura
 
 A arquitetura do projeto segue o padrão MVC (Model-View-Controller), que permite uma separação clara de responsabilidades:

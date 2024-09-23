@@ -10,13 +10,11 @@
 
 - [Arquitetura](#arquitetura)
 
-- [Dicas de Uso](uso)
+- [Dicas de Uso](#dicas)
 
-- [Arquitetura](#arquitetura)
+- [Padrões Aplicados](#padrões)
 
-- [Padrões Aplicados](#padroes)
-
-- [Boas Práticas](#boaspraticas)
+- [Boas Práticas](#boas)
 
   
 
@@ -24,12 +22,23 @@
 
 ## Introdução
 
-Este projeto é uma aplicação Delphi que consome e retorna endereços e CEPs através da API pública do ViaCEP. Permite consultas por CEP ou endereço completo, exibindo ou atualizando os dados armazenados no banco de dados.
+Este projeto é uma aplicação Delphi que consome e retorna endereços e CEPs através da API pública do ViaCEP. Possibilita consultas por CEP ou endereço completo, permitindo a navegação entre registros, exibindo ou atualizando os dados armazenados no banco de dados.
+
+![image](https://github.com/user-attachments/assets/80b49ba6-49f7-48e9-b2a6-d09925138137)
+
 
 ## Configurações
 
 Para que seja possível a execução da aplicação, é necessário que seja criado um banco de dados MSSQL Server, cujo script para criação do mesmo (*script criação de tabelas.sql*)
-, criação das tabelas das tabelas e população de registros na tabela de CEP. para que a aplicação fique disponível para uso logo que instalado.
+, criação das tabelas das tabelas e população de registros na tabela de CEPs, para que a aplicação fique disponível para uso logo que instalado.
+
+Na pasta do projeto, encontra-se o arquivo *consultacep.ini* contendo as informações necessárias para que a aplicação conecte com o banco de dados criado anteriormente.
+
+![image](https://github.com/user-attachments/assets/93d27d46-4750-446f-a354-92af05465556)
+
+Alterar na ultima linha, a informação "Address" com a informação que consta no "Nome do Servidor" ao conectar ao SQL Server do seu computador.
+
+
 ## Arquitetura
 
 A arquitetura do projeto segue o padrão MVC (Model-View-Controller), que permite uma separação clara de responsabilidades:

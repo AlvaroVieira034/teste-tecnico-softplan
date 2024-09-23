@@ -1,0 +1,121 @@
+unit uselecionacep;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids,
+  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons, FireDAC.Comp.Client, System.JSON, conexao.model;
+
+type
+  TFrmSelecionaCep = class(TForm)
+    Panel1: TPanel;
+    GroupBox1: TGroupBox;
+    GridSelecionaEnderecos: TDBGrid;
+    BtnSelecionar: TSpeedButton;
+    procedure GridSelecionaEnderecosDblClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+  private
+
+
+  public
+    QryTemp: TFDQuery;
+    DsCep: TDataSource;
+    procedure CriarTabelaTemporaria(QryTemp: TFDQuery);
+    procedure InserirCeps(QryTemp: TFDQuery; JSONArray: TJSONArray);
+    procedure CarregarDbGrid(QryTemp: TFDQuery; DSCep: TDataSource);
+    procedure ExibirCeps(JSONArray: TJSONArray);
+  end;
+
+var
+  FrmSelecionaCep: TFrmSelecionaCep;
+
+implementation
+
+{$R *.dfm}
+
+
+procedure TFrmSelecionaCep.FormCreate(Sender: TObject);
+begin
+  QryTemp := TFDQuery.Create(nil);
+  QryTemp := TConexao.GetInstance.Connection.CriarQuery;
+  DsCep := TDataSource.Create(nil);
+  DsCep := TConexao.GetInstance.Connection.CriarDataSource;
+end;
+
+procedure TFrmSelecionaCep.FormShow(Sender: TObject);
+begin
+  //CriarTabelaTemporaria(QryTemp);
+end;
+
+procedure TFrmSelecionaCep.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  FrmSelecionaCep.Free;
+end;
+
+procedure TFrmSelecionaCep.ExibirCeps(JSONArray: TJSONArray);
+begin
+  CriarTabelaTemporaria(QryTemp);
+  InserirCeps(QryTemp, JSONArray);
+  CarregarDbGrid(QryTemp, DSCep);
+end;
+
+procedure TFrmSelecionaCep.CriarTabelaTemporaria(QryTemp: TFDQuery);
+begin
+  with QryTemp do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('CREATE TABLE #TempCEPs (');
+    SQL.Add('Cep VARCHAR(10),');
+    SQL.Add('Logradouro VARCHAR(255),');
+    SQL.Add('Bairro VARCHAR(255),');
+    SQL.Add('Cidade VARCHAR(255),');
+    SQL.Add('Estado VARCHAR(2))');
+    ExecSQL;
+  end;
+end;
+
+procedure TFrmSelecionaCep.InserirCeps(QryTemp: TFDQuery; JSONArray: TJSONArray);
+var I: Integer;
+    JSONObj: TJSONObject;
+begin
+  for I := 0 to JSONArray.Count - 1 do
+  begin
+    JSONObj := JSONArray.Items[I] as TJSONObject;
+    QryTemp.Close;
+    QryTemp.SQL.Clear;
+    QryTemp.SQL.Add('INSERT INTO #TempCEPs (Cep, Logradouro, Bairro, Cidade, Estado) VALUES (:Cep, :Logradouro, :Bairro, :Cidade, :Estado)');
+
+    QryTemp.ParamByName('Cep').AsString := JSONObj.GetValue<string>('cep');
+    QryTemp.ParamByName('Logradouro').AsString := JSONObj.GetValue<string>('logradouro');
+    QryTemp.ParamByName('Bairro').AsString := JSONObj.GetValue<string>('bairro');
+    QryTemp.ParamByName('Cidade').AsString := JSONObj.GetValue<string>('localidade');
+    QryTemp.ParamByName('Estado').AsString := JSONObj.GetValue<string>('uf');
+
+    QryTemp.ExecSQL;
+  end;
+end;
+
+procedure TFrmSelecionaCep.CarregarDbGrid(QryTemp: TFDQuery; DSCep: TDataSource);
+begin
+  // Carrega os dados da tabela temporária para o DBGrid
+  QryTemp.Close;
+  QryTemp.SQL.Clear;
+  QryTemp.SQL.Add('SELECT * FROM #TempCEPs');
+  QryTemp.Open;
+
+  DSCep.DataSet := QryTemp;
+  GridSelecionaEnderecos.DataSource := DSCep;
+end;
+
+procedure TFrmSelecionaCep.GridSelecionaEnderecosDblClick(Sender: TObject);
+begin
+// Seleciona registro no Grid
+end;
+
+
+
+end.

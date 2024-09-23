@@ -1,0 +1,37 @@
+unit enderecorepository.model;
+
+interface
+
+uses umain, endereco.model, System.SysUtils, FireDAC.Comp.Client, FireDAC.Stan.Param;
+
+type
+  TEnderecoRepository = class
+  public
+    procedure SalvarEndereco(Endereco: TEndereco);
+    function GetEnderecoCEP(Cep: string): TEndereco;
+    function GetEnderecoDados(Logradouro, Cidade, Estado: string): TEndereco;
+
+
+  end;
+
+implementation
+
+{ TEnderecoRepository }
+
+
+procedure TEnderecoRepository.SalvarEndereco(Endereco: TEndereco);
+begin
+//
+end;
+
+function TEnderecoRepository.GetEnderecoCEP(Cep: string): TEndereco;
+begin
+//
+end;
+
+function TEnderecoRepository.GetEnderecoDados(Logradouro, Cidade, Estado: string): TEndereco;
+begin
+//
+end;
+
+end.

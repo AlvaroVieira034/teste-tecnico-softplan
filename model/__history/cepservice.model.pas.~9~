@@ -1,0 +1,48 @@
+unit cepservice.model;
+
+interface
+
+uses System.SysUtils, FireDAC.Comp.Client, FireDAC.Stan.Param, System.Classes, System.Net.HttpClient;
+
+type
+  TCEPService = class
+
+  public
+    function ConsultaCep(const ACep: string; AFormatJSON: Boolean): string;
+    function ConsultaEndereco(Logradouro, Cidade, Estado: string; FormatoJSON: Boolean): string;
+
+  end;
+
+implementation
+
+{ TCEPService }
+
+function TCEPService.ConsultaCep(const ACep: string; AFormatJSON: Boolean): string;
+var HTTPClient: THTTPClient;
+    Response, URL: string;
+    ResponseStream: TStringStream;
+begin
+  HTTPClient := THTTPClient.Create;
+  ResponseStream := TStringStream.Create;
+  try
+    // url para acesso ao webservice
+    if AFormatJSON then
+      URL := 'https://viacep.com.br/ws/' + ACep + '/json/'
+    else
+      URL := 'https://viacep.com.br/ws/' + ACep + '/xml/';
+
+    HTTPClient.Get(URL, ResponseStream);
+    Response := ResponseStream.DataString;
+    Result := Response;
+  finally
+    FreeAndNil(HTTPClient);
+    FreeAndNil(ResponseStream);
+  end;
+end;
+
+function TCEPService.ConsultaEndereco(Logradouro, Cidade, Estado: string; FormatoJSON: Boolean): string;
+begin
+//
+end;
+
+end.

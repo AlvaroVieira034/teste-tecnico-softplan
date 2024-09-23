@@ -1,0 +1,136 @@
+unit cepservice.model;
+
+interface
+
+uses System.SysUtils, FireDAC.Comp.Client, FireDAC.Stan.Param, System.Classes, System.Net.HttpClient;
+
+type
+  TCEPService = class
+
+  public
+    function ConsultaCep(Cep: string; FormatoJSON: Boolean): string;
+    function ConsultaEndereco(Logradouro, Cidade, Estado: string; FormatoJSON: Boolean): string;
+
+  end;
+
+implementation
+
+uses
+  System.JSON;
+
+{ TCEPService }
+
+function TCEPService.ConsultaCEP(Cep: string; FormatoJSON: Boolean): string;
+var HTTPClient: THTTPClient;
+    Response, URL: string;
+    ResponseStream: TStringStream;
+    JSONValue: TJSONValue;
+    JSONObject: TJSONObject;
+begin
+  HTTPClient := THTTPClient.Create;
+  ResponseStream := TStringStream.Create;
+  try
+    if Length(Cep) < 8 then
+      raise Exception.Create('CEP inválido!');
+
+    // URL da consulta no ViaCEP
+    if FormatoJSON then
+      URL := Format('https://viacep.com.br/ws/%s/json/', [Cep])
+    else
+      URL := Format('https://viacep.com.br/ws/%s/xml/', [Cep]);
+
+    // Faz a requisição ao web service
+    HTTPClient.Get(URL, ResponseStream);
+    Response := ResponseStream.DataString;
+
+    // Faz o parsing da resposta JSON
+    JSONValue := TJSONObject.ParseJSONValue(Response);
+    if Assigned(JSONValue) and (JSONValue is TJSONObject) then
+    begin
+      JSONObject := JSONValue as TJSONObject;
+      if JSONObject.GetValue('erro') <> nil then
+      begin
+        Result := ''; // Retorna vazio se o CEP não for encontrado
+        Exit;
+      end;
+    end;
+    Result := Response;
+  finally
+    HTTPClient.Free;
+    ResponseStream.Free;
+    JSONValue.Free;
+    JSONObject.Free;
+  end;
+end;
+
+function TCEPService.ConsultaEndereco(Logradouro, Cidade, Estado: string; FormatoJSON: Boolean): string;
+var
+  HTTPClient: THTTPClient;
+  Response, URL: string;
+  ResponseStream: TStringStream;
+  JSONValue: TJSONValue;
+  JSONArray: TJSONArray;
+  JSONObject: TJSONObject;
+begin
+  HTTPClient := THTTPClient.Create;
+  ResponseStream := TStringStream.Create;
+  try
+    // Validação de parâmetros
+    if (Length(Logradouro) < 3) or (Length(Cidade) < 3) or (Length(Estado) < 2) then
+      raise Exception.Create('Parâmetros de endereço inválidos! Verifique o Logradouro, Localidade ou UF ');
+
+    // URL de consulta da API ViaCEP
+    if FormatoJSON then
+      URL := Format('https://viacep.com.br/ws/%s/%s/%s/json/', [Estado, Cidade, Logradouro])
+    else
+      URL := Format('https://viacep.com.br/ws/%s/%s/%s/xml/', [Estado, Cidade, Logradouro]);
+
+    // Faz a requisição ao web service
+    HTTPClient.Get(URL, ResponseStream);
+    Response := ResponseStream.DataString;
+
+    // Faz o parsing da resposta JSON
+    JSONValue := TJSONObject.ParseJSONValue(Response);
+    if Assigned(JSONValue) then
+    begin
+      if JSONValue is TJSONArray then
+      begin
+        JSONArray := JSONValue as TJSONArray;
+
+        // Valida se o array está vazio (endereço não encontrado)
+        if JSONArray.Count = 0 then
+        begin
+          Result := ''; // Retorna vazio se o endereço não for encontrado
+          Exit;
+        end;
+
+        JSONObject := JSONArray.Items[0] as TJSONObject; // Acessa o primeiro item do array
+        if JSONObject.GetValue('erro') <> nil then
+        begin
+          Result := ''; // Retorna vazio se houver erro
+          Exit;
+        end;
+      end
+      else if JSONValue is TJSONObject then
+      begin
+        JSONObject := JSONValue as TJSONObject;
+
+        // Valida se o objeto contém o campo "erro"
+        if JSONObject.GetValue('erro') <> nil then
+        begin
+          Result := ''; // Retorna vazio se o endereço não for encontrado
+          Exit;
+        end;
+      end;
+    end;
+
+    // Se não houver erro, retorna a resposta completa
+    Result := Response;
+  finally
+    HTTPClient.Free;
+    ResponseStream.Free;
+    JSONValue.Free; // Libera a memória do JSONValue
+  end;
+end;
+
+end.

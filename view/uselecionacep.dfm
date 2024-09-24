@@ -16,7 +16,6 @@ object FrmSelecionaCep: TFrmSelecionaCep
   Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel

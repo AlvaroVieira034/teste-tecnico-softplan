@@ -14,7 +14,6 @@ type
     GridSelecionaEnderecos: TDBGrid;
     BtnSelecionar: TSpeedButton;
     procedure GridSelecionaEnderecosDblClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure BtnSelecionarClick(Sender: TObject);
@@ -54,13 +53,8 @@ begin
   DsCep := TConexao.GetInstance.Connection.CriarDataSource;
 end;
 
-procedure TFrmSelecionaCep.FormShow(Sender: TObject);
+procedure TFrmSelecionaCep.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  //CriarTabelaTemporaria(QryTemp);
-end;
-
-procedure TFrmSelecionaCep.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
   FrmSelecionaCep.Free;
 end;
 
@@ -160,10 +154,7 @@ end;
 procedure TFrmSelecionaCep.CarregarEnderecosDoBanco(AQuery, QryEnderecos : TFDQuery; const ALogradouro, ALocalidade, AUF: string);
 var I: Integer;
 begin
-  // Exemplo de como popular o grid com os resultados do banco de dados
-
-  QryEnderecos.SQL := AQuery.SQL; // Usa a mesma consulta da pesquisa
-
+  QryEnderecos.SQL := AQuery.SQL;
   QryEnderecos.ParamByName('LOGRADOURO').AsString := '%' + ALogradouro + '%';
   QryEnderecos.ParamByName('LOCALIDADE').AsString := '%' + ALocalidade + '%';
   QryEnderecos.ParamByName('UF').AsString := AUF;

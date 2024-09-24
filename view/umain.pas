@@ -623,14 +623,6 @@ begin
                   FEndereco.Bairro := frmSelecionaCep.QryTemp.FieldByName('BAIRRO').AsString;
                   FEndereco.Localidade := frmSelecionaCep.QryTemp.FieldByName('LOCALIDADE').AsString;
                   FEndereco.UF := frmSelecionaCep.QryTemp.FieldByName('UF').AsString;
-
-                  {// Preenche os demais campos no form principal
-                  EdtCep.Text := FEndereco.Cep;
-                  EdtLogradouro.Text := FEndereco.Logradouro;
-                  EdtComplemento.Text := FEndereco.Complemento;
-                  EdtBairro.Text := FEndereco.Bairro;
-                  EdtLocalidade.Text := FEndereco.Localidade;
-                  EdtUF.Text := FEndereco.UF;}
                 end;
               finally
                 frmSelecionaCep.Free;
@@ -642,21 +634,10 @@ begin
               EdtPesqLogradouro.SetFocus;
               Exit;
             end;
-          end
-          else
-          begin
-            //FEndereco.CarregarJSON(LResultado); // Carrega o JSON normal se houver só um registro
-            // Preenche o form principal com os dados
-            //EdtCep.Text := FEndereco.Cep;
-            //EdtLogradouro.Text := FEndereco.Logradouro;
-            //Exit;
           end;
-
-
         end
         else
           FEndereco.CarregarXML(LResultado);
-
 
         with FEndereco do
         begin
@@ -712,7 +693,6 @@ begin
   try
     if FrmSelecionaCep.ShowModal = mrOk then
     begin
-      // Após a seleção, preenche os campos com os dados do objeto FEndereco
       EdtCep.Text := FEndereco.Cep;
       EdtLogradouro.Text := FEndereco.Logradouro;
       EdtBairro.Text := FEndereco.Bairro;

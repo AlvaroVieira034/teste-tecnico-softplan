@@ -13,9 +13,6 @@ type
     function Alterar(QryCep: TFDQuery; FEndereco: TEndereco; iCodigo: Integer; out sErro: string): Boolean;
     function Excluir(QryCep: TFDQuery; iCodigo: Integer; out sErro : string): Boolean;
 
-    function GetEnderecoCEP(Cep: string): TEndereco;
-    function GetEnderecoDados(Logradouro, Cidade, Estado: string): TEndereco;
-
   end;
 
 implementation
@@ -169,16 +166,6 @@ begin
       end;
     end;
   end;
-end;
-
-function TEnderecoRepository.GetEnderecoCEP(Cep: string): TEndereco;
-begin
-//
-end;
-
-function TEnderecoRepository.GetEnderecoDados(Logradouro, Cidade, Estado: string): TEndereco;
-begin
-//
 end;
 
 end.

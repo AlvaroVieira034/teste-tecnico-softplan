@@ -10,7 +10,6 @@ type
     private
       FConnection: TConnection;
 
-
     public
       property Connection: TConnection read FConnection write FConnection;
       constructor Create;
@@ -47,7 +46,6 @@ begin
     InstanciaBD := TConexao.Create;
 
   Result := InstanciaBD
-
 end;
 
 initialization
